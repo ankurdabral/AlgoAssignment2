@@ -205,3 +205,5 @@ class MazeTester {
 		}
 	} // end of main()
 } // end of class MazeTester
+
+// cooment added
