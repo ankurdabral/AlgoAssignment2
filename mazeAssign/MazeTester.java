@@ -140,7 +140,7 @@ class MazeTester {
 		MazeGenerator mazeGen = null;
 		switch (mazeGeneratorName) {
 		case "modiPrim":
-			mazeGen = new ModifiedPrimsGenerator();
+			mazeGen = new ModifiedPrimsGenerator(maze);
 			break;
 		case "recurBack":
 			mazeGen = new RecursiveBacktrackerGenerator();
