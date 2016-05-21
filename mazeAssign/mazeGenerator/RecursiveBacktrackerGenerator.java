@@ -1,89 +1,94 @@
 package mazeGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Random;
 
 import maze.Cell;
 import maze.Maze;
 
 public class RecursiveBacktrackerGenerator implements MazeGenerator {
-	private HashMap<Integer, Cell> visited;
-	private HashMap<Integer, Cell> unvisited;
-//	private HashSet<Cell> neighbours;
 	private Maze maze;
+	HashMap<Cell, Boolean> cells;
+//	private boolean[] visited;
+	private static int count = 0;
 	public final static Random random = new Random();
 	
 	public RecursiveBacktrackerGenerator() {
-		visited = new HashMap<Integer, Cell>();
-		unvisited = new HashMap<Integer,Cell>();
+		cells = new HashMap<Cell, Boolean>();
 		
 	}
 	@Override
 	public void generateMaze(Maze maze) {
 		this.maze = maze;
-//		for(int i = 0; i < maze.sizeR; i++) {
-//			for(int j = 0; j < maze.sizeC; j++) {
-//				unvisited.add(maze.map[i][j]);
-//			}
-//		}
-		Cell cell = maze.map[random.nextInt(maze.sizeR)][random.nextInt(maze.sizeC)];
-		visited.put(new Integer(((cell.r-1)*maze.sizeR)+cell.c), cell);
+		for(int i=0; i<maze.map.length; i++) {
+			for(int j=0; j<maze.map[i].length; j++) {
+				cells.put(maze.map[i][j], false);			
+			}
+		}
+//		visited = new boolean[cells.size()+1];
+//		for(boolean b: visited)
+//			b= false;
 		
-		carvePath(cell);
-
+		do {
+		int row = random.nextInt(maze.sizeR);
+		int column = random.nextInt(maze.sizeC);
+		Cell cell = maze.map[row][column];
+		if(cell == null)
+			continue;
+		buildPaths(cell);
+		break;
+		}while(true);
 	} // end of generateMaze()
 
-	private Cell getRandomNeighbour(Cell cell) {
+	public void buildPaths(Cell cell) {
+		count++;
+//		System.out.println(count + "started");
+//		System.out.println("Cell ["+cell.r+"]["+cell.c+"]");
+		cells.put(cell, true);
+		ArrayList<Cell> neighboursList = new ArrayList<Cell>();
 		
-	}
-	private Cell carvePath(Cell cell) {
-		Cell newCell = null;
-		HashMap<Integer, Cell> list = new HashMap<Integer, Cell>();
-		for(int i = 0; i < cell.neigh.length; i++) {
-			if(cell.neigh[i]!=null && cell.wall[i].present == true) {
-				list.put(new Integer(i), cell.neigh[i]);
+		for(Cell c: cell.neigh) {
+			if(c!=null && cells.containsKey(c) && !cells.get(c)) {
+				neighboursList.add(c);
 			}
 		}
-		int randomDir = random.nextInt(list.keySet().size());
-		int i = 0;
-		int direction = -1;
-		for(Integer dir: list.keySet()) {
-			if(i == randomDir) {
-				newCell = cell.neigh[dir];
-				direction = dir;
-			}
-			i++;
+		if(neighboursList.size() == 0) {
+//			System.out.println(count + "ended");
+			count--;
+			return;
 		}
 		
-		list.remove(direction);
-		cell.wall[direction].present = false;
-		visited.put(new Integer(newCell.r*maze.sizeC + newCell.c),newCell);
-//		HashSet<Cell> neigh = new HashSet<Cell>();
-//		for(int i = 0; i < cell.neigh.length; i++) {
-//			if(cell.neigh[i]!=null)
-//				neigh.add(cell.neigh[i]);
-//		}
-//		Cell randomCell = null;
-//		int flag = 0;
-//		while(neigh.size()>0) {
-//			int item = random.nextInt(neigh.size());
-//			int i =0;
-//			for(Cell c: neigh) {
-//				if(i == item) {
-//					randomCell = c;
-//					flag = 1;
-//					break;
-//				}
-//			}
-//			if(flag == 1)
-//				break;
-//		}
-//		
-//		if(newCell == null)
-//			return 
+		do{
+			Cell neighbour = neighboursList.get(random.nextInt(neighboursList.size())); 
+			if(cells.get(neighbour)){
+				neighboursList.remove(neighbour);
+				continue;
+			}
+			
+			
+			
+			if(!cells.get(neighbour)){
+				neighboursList.remove(neighbour);
+				cells.put(neighbour, true);
+				int dir = getDirection(cell, neighbour);
+				System.out.println("Neighbour ["+neighbour.r+"]["+neighbour.c+"] direction " + dir);
+				cell.wall[dir].present = false;
+				buildPaths(neighbour);
+			}
+		}while(neighboursList.size() > 0);
 		
-		
+		System.out.println(count + "ended");
+		count--;
 	}
-	
+		
+	private int getDirection(Cell host, Cell neighbour) {
+		for(int i = 0; i < host.neigh.length; i++) {
+			if(host.neigh[i]!=null) {
+				if(host.neigh[i].r == neighbour.r && host.neigh[i].c == neighbour.c)
+					return i;
+			}
+		}
+		return -1;
+	}
 } // end of class RecursiveBacktrackerGenerator
