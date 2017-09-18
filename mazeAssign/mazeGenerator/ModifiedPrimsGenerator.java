@@ -8,6 +8,7 @@ import maze.Cell;
 import maze.Maze;
 
 public class ModifiedPrimsGenerator implements MazeGenerator {
+<<<<<<< HEAD
 	public static final Random random = new Random();
 	private HashSet<Cell> Z;
 	private HashSet<Cell> F;
@@ -17,6 +18,15 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 		F = new HashSet<Cell>();
 	}
 	
+=======
+
+	private Maze maze;
+	public ModifiedPrimsGenerator(Maze maze) {
+		this.maze = maze;
+	}
+
+	@Override
+>>>>>>> master-branch
 	public void generateMaze(Maze maze) {
 		Cell cell = maze.map[random.nextInt(maze.sizeR)][random.nextInt(maze.sizeC)];
 		Z.add(cell);
